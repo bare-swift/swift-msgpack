@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-10
+
+### Added
+- `MsgPackValue.timestamp(_ instant: Time.Instant) -> MsgPackValue` — build a MessagePack timestamp ext-type (id `−1`) value from a `Time.Instant`. Picks the shortest valid wire form: timestamp32 (4-byte) for whole-second positive-only instants up to year 2106, timestamp64 (8-byte) for sub-second instants up to year 2514, timestamp96 (12-byte) for everything else including pre-epoch.
+- `MsgPackValue.asTimestamp: Time.Instant?` — decode a timestamp ext-type back into a `Time.Instant`. Returns `nil` for non-`ext(-1)` values or malformed payloads. Recognises all three wire formats per the spec.
+- 10 new tests covering encode-format selection, round-trips through all three wire forms, pre-epoch instants, full `MsgPack.encode → decode` round-trip, and malformed-payload handling.
+
+### Dependencies
+- New: `swift-time` 0.1.0 — for the `Time.Instant` type used by the timestamp helpers.
+
+### Migration
+- Additive only. v0.1 consumers continue to work unchanged. Timestamp ext-type values still parse to `MsgPackValue.ext(-1, Bytes)`; the new `asTimestamp` getter is available alongside the raw form for opt-in adoption.
+
 ## [0.1.0] - 2026-05-09
 
 ### Added
